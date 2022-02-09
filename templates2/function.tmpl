@@ -2,7 +2,7 @@
 {{- $f := .}}
 
 func {{.TestName}}(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 	{{- if .TestParameters}}
 	type args struct {
 		{{- range .TestParameters}}
@@ -21,7 +21,7 @@ func {{.TestName}}(t *testing.T) {
 	type setupFieldsFunc func(t *testing.T,
 		{{- if $f.TestParameters}}args args, {{end}}
 		{{- range $f.TestResults}}{{Want .}} {{.Type}}, {{end -}}
-  ) fields
+	) fields
 	{{- end}}{{end}}
 	tests := map[string]struct {
 		{{with .Receiver}}{{if not .IsStruct}}{{Receiver .}} {{.Type}}{{end}}{{end}}
