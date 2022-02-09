@@ -1,0 +1,80 @@
+{{define "function"}}
+{{- $f := .}}
+
+func {{.TestName}}(t *testing.T) {
+  t.Parallel()
+	{{- if .TestParameters}}
+	type args struct {
+		{{- range .TestParameters}}
+			{{Param .}} {{.Type}}
+		{{- end}}
+	}
+	{{- end}}
+	{{- with .Receiver}}{{if and .IsStruct .Fields}}
+	type fields struct {
+	{{- range .Fields}}
+		{{Field .}} {{.Type}}
+	{{- end}}
+	}
+	{{- end}}{{end}}
+	{{- with .Receiver}}{{if and .IsStruct .Fields}}
+	type setupFieldsFunc func(t *testing.T,
+		{{- if $f.TestParameters}}args args, {{end}}
+		{{- range $f.TestResults}}{{Want .}} {{.Type}}, {{end -}}
+  ) fields
+	{{- end}}{{end}}
+	tests := map[string]struct {
+		{{with .Receiver}}{{if not .IsStruct}}{{Receiver .}} {{.Type}}{{end}}{{end}}
+		{{if .TestParameters}}args args{{end}}
+		{{- range .TestResults}}
+			{{Want .}} {{.Type}}
+		{{- end}}
+		{{with .Receiver}}{{if and .IsStruct .Fields}}setupFields setupFieldsFunc{{end}}{{end}}
+		{{if .ReturnsError}}wantErr bool{{end}}
+	}{
+		// TODO: Add test cases.
+	}
+	for name, tt := range tests {
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			{{- with .Receiver}}{{if and .IsStruct .Fields}}
+				f := tt.setupFields(t,
+					{{- if $f.TestParameters}}tt.args,{{end}}
+					{{- range $f.TestResults}}tt.{{Want .}},{{end -}}
+				)
+				{{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{
+					{{range .Fields}}{{.Name}}: f.{{Field .}},{{end}}
+				}
+			{{- end}}{{end}}
+			{{- range .Parameters}}
+				{{- if .IsWriter}}
+					{{Param .}} := &bytes.Buffer{}
+				{{- end}}
+			{{- end}}
+			{{- if and (not .OnlyReturnsError) (not .OnlyReturnsOneValue) }}
+				{{template "results" $f}} {{template "call" $f}}
+			{{- end}}
+			{{- if .ReturnsError}}
+				if {{if .OnlyReturnsError}}err := {{template "call" $f}};{{end}} (err != nil) != tt.wantErr {
+					t.Errorf("wantErr is %t, but err is %v", tt.wantErr, err)
+				}
+			{{- end}}
+			{{- range .TestResults}}
+				if diff := cmp.Diff(tt.{{Want .}},
+				{{- if .IsWriter}}
+					{{Param .}}.String()
+				{{- else}}
+					{{- if $f.OnlyReturnsOneValue}}
+						{{- template "inline" $f}}
+					{{- else}}
+						{{- Got .}}
+					{{- end}}
+				{{- end}}); len(diff) > 0 {
+					t.Errorf("Compare value is mismatch (-want +got):%s\n", diff)
+				}
+			{{- end}}
+		})
+	}
+}
+{{end}}
