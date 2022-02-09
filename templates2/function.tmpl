@@ -44,7 +44,9 @@ func {{.TestName}}(t *testing.T) {
 					{{- range $f.TestResults}}tt.{{Want .}},{{end -}}
 				)
 				{{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{
-					{{range .Fields}}{{.Name}}: f.{{Field .}},{{end}}
+					{{- range .Fields}}
+						{{.Name}}: f.{{Field .}},
+					{{- end}}
 				}
 			{{- end}}{{end}}
 			{{- range .Parameters}}
