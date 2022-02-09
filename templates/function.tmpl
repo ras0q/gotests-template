@@ -36,8 +36,8 @@ func {{.TestName}}(t *testing.T) {
 		{{- end}}
 	}
 	{{- end}}
-	tests := {{ if .Named}}map[string]struct{{else}}[]struct{{end}} {
-		{{ if (not .Named)}}name string{{end}}
+	tests := []struct {
+		name string
 		{{- with .Receiver}}
 			{{- if and .IsStruct .Fields}}
 				fields fields
@@ -62,11 +62,10 @@ func {{.TestName}}(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for {{if (or .Subtests (not .IsNaked))}} {{if .Named}}name{{else}}_{{end}}, tt := {{end}} range tests {
+	for {{if (or .Subtests (not .IsNaked))}} _, tt := {{end}} range tests {
 		{{- if .Subtests}}
 		{{- if .Parallel}}tt := tt;{{end}}
-		{{- if and .Parallel .Named}}name := name;{{ end }}
-		t.Run({{if .Named}}name{{else}}tt.name{{end}}, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			{{- if .Parallel}}t.Parallel(){{end}}
 		{{- end}}
 			{{- with .Receiver}}
@@ -77,7 +76,9 @@ func {{.TestName}}(t *testing.T) {
 					{{- end}}
 					}
 				{{- end}}
-				tt.setup({{if .Fields}}tt.fields,{{end}}{{- if $f.TestParameters}}tt.args,{{end}}{{- range $f.TestResults}}tt.{{Want .}},{{end}})
+				if tt.setup != nil {
+					tt.setup({{if .Fields}}tt.fields,{{end}}{{- if $f.TestParameters}}tt.args,{{end}}{{- range $f.TestResults}}tt.{{Want .}},{{end}})
+					}
 			{{- end}}
 			{{- range .Parameters}}
 				{{- if .IsWriter}}
