@@ -31,6 +31,7 @@ func {{.TestName}}(t *testing.T) {
 		{{- end}}
 		{{with .Receiver}}{{if and .IsStruct .Fields}}setupFields setupFieldsFunc{{end}}{{end}}
 		{{if .ReturnsError}}wantErr bool{{end}}
+		ignoreFields []cmp.Option
 	}{
 		// TODO: Add test cases.
 	}
@@ -72,7 +73,7 @@ func {{.TestName}}(t *testing.T) {
 					{{- else}}
 						{{- Got .}}
 					{{- end}}
-				{{- end}}); len(diff) > 0 {
+				{{- end}}, ignoreFields...); len(diff) > 0 {
 					t.Errorf("Compare value is mismatch (-want +got):%s\n", diff)
 				}
 			{{- end}}
