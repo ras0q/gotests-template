@@ -24,7 +24,7 @@ func {{.TestName}}(t *testing.T) {
 	) fields
 	{{- end}}{{end}}
 	tests := map[string]struct {
-		{{with .Receiver}}{{if not .IsStruct}}{{Receiver .}} {{.Type}}{{end}}{{end}}
+		{{with .Receiver}}{{if not .IsStruct}}{{Receiver .}} {{.Type}}{{end}}{{end -}}
 		{{if .TestParameters}}args args{{end}}
 		{{- range .TestResults}}
 			{{Want .}} {{.Type}}
@@ -32,6 +32,7 @@ func {{.TestName}}(t *testing.T) {
 		{{with .Receiver}}{{if and .IsStruct .Fields}}setupFields setupFieldsFunc{{end}}{{end}}
 		{{if .ReturnsError}}wantErr bool{{end}}
 		ignoreFields []cmp.Option
+		selfAssert []func(t *testing.T,{{if .TestParameters}}args args{{end}},{{- range .TestResults}}{{Want .}} {{.Type}},{{- end}})
 	}{
 		// TODO: Add test cases.
 	}
@@ -73,10 +74,13 @@ func {{.TestName}}(t *testing.T) {
 					{{- else}}
 						{{- Got .}}
 					{{- end}}
-				{{- end}}, ignoreFields...); len(diff) > 0 {
+				{{- end}}, tt.ignoreFields...); len(diff) > 0 {
 					t.Errorf("Compare value is mismatch (-want +got):%s\n", diff)
 				}
 			{{- end}}
+			for _, r := range tt.selfAssert {
+				r(t, {{- if $f.TestParameters}}tt.args,{{end}} {{- range $f.TestResults}}tt.{{Want .}},{{- end}})
+			}
 		})
 	}
 }
