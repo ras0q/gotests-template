@@ -9,10 +9,8 @@ Add gotests settings to ./vscode/settings.json
 {
   ...,
   "go.generateTestsFlags": [
-    "-i",
-    "-parallel",
     "-template_dir",
-    "./vscode/gotests-template/templates"
+    "./path/to/Ras96/gotests-template/templates" // Or template2
   ],
   ...
 }
