@@ -74,7 +74,7 @@ func {{.TestName}}(t *testing.T) {
 					{{- else}}
 						{{- Got .}}
 					{{- end}}
-				{{- end}}, tt.ignoreFields...); len(diff) > 0 {
+				{{- end}}, tt.opts...); len(diff) > 0 {
 					t.Errorf("Compare value is mismatch (-want +got):%s\n", diff)
 				}
 			{{- end}}
