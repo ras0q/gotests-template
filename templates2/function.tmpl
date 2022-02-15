@@ -78,8 +78,8 @@ func {{.TestName}}(t *testing.T) {
 					t.Errorf("Compare value is mismatch (-want +got):%s\n", diff)
 				}
 			{{- end}}
-			for _, r := range tt.selfAssert {
-				r(t, {{- if $f.TestParameters}}tt.args,{{end}} {{- range $f.TestResults}}tt.{{Want .}},{{- end}})
+			for _, fn := range tt.selfAssert {
+				fn(t, {{- if $f.TestParameters}}tt.args,{{end}} {{- range $f.TestResults}}tt.{{Want .}},{{- end}})
 			}
 		})
 	}
