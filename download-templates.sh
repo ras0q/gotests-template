@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILES="call functions header inline inputs message results"
+FILES="call function header inline inputs message results"
 BASEURL=" https://raw.githubusercontent.com/cweill/gotests/develop/internal/render/templates"
 ORIGINALDIR="./original"
 
