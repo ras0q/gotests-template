@@ -22,8 +22,8 @@ func TestNewFoo(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for name, tt := range tests {
-		tt := tt
 		name := name
+		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := NewFoo(tt.args.repo, tt.args.srv)
@@ -52,8 +52,8 @@ func Test_hoge_GetFromRepo(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for name, tt := range tests {
-		tt := tt
 		name := name
+		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			f := tt.fields
@@ -87,8 +87,8 @@ func Test_hoge_DoWithSrv(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for name, tt := range tests {
-		tt := tt
 		name := name
+		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			f := tt.fields
@@ -119,8 +119,8 @@ func Test_hoge_Complecated(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for name, tt := range tests {
-		tt := tt
 		name := name
+		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			f := tt.fields
@@ -158,8 +158,8 @@ func Test_hoge_WriteToBuffer(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for name, tt := range tests {
-		tt := tt
 		name := name
+		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			f := tt.fields
