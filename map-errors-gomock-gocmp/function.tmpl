@@ -1,0 +1,90 @@
+{{define "function"}}
+{{- $f := .}}
+
+func {{.TestName}}(t *testing.T) {
+	{{- if .Parallel}}t.Parallel(){{end}}
+	{{- with .Receiver}}
+		{{- if .IsStruct}}
+			{{- if .Fields}}
+				type fields struct {
+				{{- range .Fields}}
+					{{Field .}} func(*gomock.Controller){{.Type}}
+				{{- end}}
+				}
+			{{- end}}
+		{{- end}}
+	{{- end}}
+	{{- if .TestParameters}}
+	type args struct {
+		{{- range .TestParameters}}
+				{{Param .}} {{.Type}}
+		{{- end}}
+	}
+	{{- end}}
+	tests := map[string]struct {
+		{{- with .Receiver}}
+			{{- if and .IsStruct .Fields}}
+				fields fields
+			{{- else}}
+				{{Receiver .}} {{.Type}}
+			{{- end}}
+		{{- end}}
+		{{- if .TestParameters}}
+			args args
+		{{- end}}
+		{{- range .TestResults}}
+			{{Want .}} {{.Type}}
+		{{- end}}
+		{{- if .ReturnsError}}
+			err error
+		{{- end}}
+	}{
+		// TODO: Add test cases.
+	}
+	for {{if (or .Subtests (not .IsNaked))}} name, tt := {{end}} range tests {
+		{{- if .Subtests}}
+		{{- if .Parallel}}tt := tt;{{end}}
+		{{- if and .Parallel}}name := name;{{ end }}
+		t.Run(name, func(t *testing.T) {
+			{{- if .Parallel}}t.Parallel(){{end}}
+		{{- end}}
+			{{- with .Receiver}}
+				{{- if .IsStruct}}
+					f := tt.fields
+					ctrl := gomock.NewController(t)
+					{{Receiver .}} := {{if .Type.IsStar}}&{{end}}{{.Type.Value}}{
+					{{- range .Fields}}
+						{{.Name}}: f.{{Field .}}(ctrl),
+					{{- end}}
+					}
+				{{- end}}
+			{{- end}}
+			{{- range .Parameters}}
+				{{- if .IsWriter}}
+					{{Param .}} := &bytes.Buffer{}
+				{{- end}}
+			{{- end}}
+			{{- if and (not .OnlyReturnsError) }}
+				{{template "results" $f}} {{template "call" $f}}
+			{{- end}}
+			{{- if .ReturnsError}}
+				if {{if .OnlyReturnsError}} err := {{template "call" $f}}; {{end}} !errors.Is(err, tt.err) {
+					t.Errorf("{{template "message" $f}} error = %v, want %v", {{template "inputs" $f}} err, tt.err)
+					{{- if .TestResults}}
+						{{if .Subtests }}return{{else}}continue{{end}}
+					{{- end}}
+				}
+			{{- end}}
+			{{- range .TestResults}}
+				{{- if .IsWriter}}
+					{{Got .}} := {{Param .}}.String()
+				{{- end}}
+				if diff := cmp.Diff({{Got .}}, tt.{{Want .}}); len(diff) > 0 {
+					t.Errorf("{{template "message" $f}} {{if $f.ReturnsMultiple}}{{Got .}} {{end}}= %v, want %v", {{template "inputs" $f}} {{Got .}}, tt.{{Want .}})
+				}
+			{{- end}}
+		{{- if .Subtests }} }) {{- end -}}
+	}
+}
+
+{{end}}
