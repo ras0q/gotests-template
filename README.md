@@ -1,6 +1,6 @@
 # gotests-template
 
-My template for cweill/gotests
+My template for [cweill/gotests](https://github.com/cweill/gotests)
 
 ## Usage (VSCode)
 
@@ -19,11 +19,11 @@ Add gotests settings to ./vscode/settings.json
 
 ## Contents
 
-### templates (deprecated)
+### templates
 
 [example_templates_test.go](./example_templates_test.go)
 
-### templates2 (deprecated)
+### templates2
 
 [example_templates2_test.go](./example_templates2_test.go)
 
