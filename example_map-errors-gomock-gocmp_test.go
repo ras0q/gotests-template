@@ -28,7 +28,7 @@ func TestNewFoo(t *testing.T) {
 			t.Parallel()
 			got := NewFoo(tt.args.repo, tt.args.srv)
 			if diff := cmp.Diff(got, tt.want); len(diff) > 0 {
-				t.Errorf("NewFoo() = %v, want %v", got, tt.want)
+				t.Errorf("NewFoo() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -68,7 +68,7 @@ func Test_hoge_GetFromRepo(t *testing.T) {
 				return
 			}
 			if diff := cmp.Diff(got, tt.want); len(diff) > 0 {
-				t.Errorf("hoge.GetFromRepo() = %v, want %v", got, tt.want)
+				t.Errorf("hoge.GetFromRepo() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -135,10 +135,10 @@ func Test_hoge_Complecated(t *testing.T) {
 				return
 			}
 			if diff := cmp.Diff(got, tt.want); len(diff) > 0 {
-				t.Errorf("hoge.Complecated() got = %v, want %v", got, tt.want)
+				t.Errorf("hoge.Complecated() mismatch (-want +got):\n%s", diff)
 			}
 			if diff := cmp.Diff(got1, tt.want1); len(diff) > 0 {
-				t.Errorf("hoge.Complecated() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("hoge.Complecated() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -175,7 +175,7 @@ func Test_hoge_WriteToBuffer(t *testing.T) {
 			}
 			gotW := w.String()
 			if diff := cmp.Diff(gotW, tt.wantW); len(diff) > 0 {
-				t.Errorf("hoge.WriteToBuffer() = %v, want %v", gotW, tt.wantW)
+				t.Errorf("hoge.WriteToBuffer() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
